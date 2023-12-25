@@ -7,8 +7,6 @@ let snake = [{ x: 10, y: 10 }];
 let food = { x: 15, y: 15 };
 let direction = "right";
 
-// ... (Previous code)
-
 // Add the following variables for scoring
 let score = 0;
 const scoreElement = document.getElementById("scoreValue");
@@ -16,27 +14,51 @@ const scoreElement = document.getElementById("scoreValue");
 function move() {
     const head = { ...snake[0] };
 
-    // ... (Previous move logic)
-
-    // Check if the snake ate the food
-    if (collision(head, food)) {
-        // Generate new food
-        food = generateFood();
-
-        // Increase the score
-        score += 10;
-
-        // Update the score on the screen
-        scoreElement.textContent = score;
-    } else {
-        // Remove the tail
-        snake.pop();
+    // Move the head based on the direction
+    switch (direction) {
+        case "up":
+            head.y -= 1;
+            break;
+        case "down":
+            head.y += 1;
+            break;
+        case "left":
+            head.x -= 1;
+            break;
+        case "right":
+            head.x += 1;
+            break;
     }
 
-    draw();
-}
+    // Check for collisions with walls or itself
+    if (
+        head.x < 0 || head.x >= canvas.width / boxSize ||
+        head.y < 0 || head.y >= canvas.height / boxSize ||
+        collision(head, snake)
+    ) {
+        // Game over
+        resetGame();
+    } else {
+        snake.unshift(head);
 
-// ... (Rest of the code)
+        // Check if the snake ate the food
+        if (collision(head, food)) {
+            // Generate new food
+            food = generateFood();
+
+            // Increase the score
+            score += 10;
+
+            // Update the score on the screen
+            scoreElement.textContent = score;
+        } else {
+            // Remove the tail
+            snake.pop();
+        }
+
+        draw();
+    }
+}
 
 function draw() {
     // Clear the canvas
@@ -82,52 +104,6 @@ function draw() {
     const foodY = (food.y + 0.5) * boxSize;
     ctx.arc(foodX, foodY, foodRadius, 0, 2 * Math.PI);
     ctx.fill();
-}
-
-
-
-
-function move() {
-    const head = { ...snake[0] };
-
-    // Move the head based on the direction
-    switch (direction) {
-        case "up":
-            head.y -= 1;
-            break;
-        case "down":
-            head.y += 1;
-            break;
-        case "left":
-            head.x -= 1;
-            break;
-        case "right":
-            head.x += 1;
-            break;
-    }
-
-    // Check for collisions with walls or itself
-    if (
-        head.x < 0 || head.x >= canvas.width / boxSize ||
-        head.y < 0 || head.y >= canvas.height / boxSize ||
-        collision(head, snake)
-    ) {
-        // Game over
-        resetGame();
-    } else {
-        snake.unshift(head);
-
-        // Check if the snake ate the food
-        if (collision(head, food)) {
-            // Generate new food
-            food = generateFood();
-        } else {
-            // Remove the tail
-            snake.pop();
-        }
-
-        draw();
-    }
 }
 
 function collision(a, b) {
@@ -189,7 +165,5 @@ document.addEventListener("keydown", function (event) {
     }
 });
 
-
 // Game loop
 setInterval(move, 200);
-
